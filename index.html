@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌱 Tobi's Greenhouse</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #87CEEB 0%, #98D8E8 30%, #7BC67E 30%, #5AAD5A 50%, #4A8B3F 100%);
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Clouds */
+  .cloud {
+    position: fixed;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.8;
+    z-index: 0;
+    animation: drift linear infinite;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+  .cloud1 { width: 120px; height: 40px; top: 40px; left: -150px; animation-duration: 35s; }
+  .cloud1::before { width: 50px; height: 50px; top: -20px; left: 20px; }
+  .cloud1::after { width: 70px; height: 55px; top: -25px; left: 45px; }
+  .cloud2 { width: 160px; height: 50px; top: 90px; left: -200px; animation-duration: 45s; animation-delay: 5s; }
+  .cloud2::before { width: 65px; height: 60px; top: -28px; left: 30px; }
+  .cloud2::after { width: 80px; height: 65px; top: -30px; left: 60px; }
+  .cloud3 { width: 100px; height: 35px; top: 20px; left: -120px; animation-duration: 55s; animation-delay: 12s; }
+  .cloud3::before { width: 45px; height: 45px; top: -18px; left: 15px; }
+  .cloud3::after { width: 55px; height: 48px; top: -22px; left: 38px; }
+
+  @keyframes drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(100vw + 300px)); }
+  }
+
+  /* Sun */
+  .sun {
+    position: fixed;
+    top: 20px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    background: #FFD93D;
+    border-radius: 50%;
+    box-shadow: 0 0 40px #FFD93D, 0 0 80px rgba(255, 217, 61, 0.4);
+    z-index: 0;
+    animation: pulse-sun 3s ease-in-out infinite;
+  }
+  .sun-ray {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, #FFD93D, transparent);
+    transform-origin: 0 50%;
+  }
+  @keyframes pulse-sun { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+  /* Ground decorations */
+  .ground-deco {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .flower-deco {
+    position: absolute;
+    bottom: 10px;
+    font-size: 28px;
+    animation: sway 3s ease-in-out infinite;
+  }
+  @keyframes sway { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+
+  /* Butterfly */
+  .butterfly {
+    position: fixed;
+    font-size: 22px;
+    z-index: 1;
+    animation: fly 20s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes fly {
+    0% { top: 15%; left: 10%; transform: rotate(0deg); }
+    25% { top: 25%; left: 60%; transform: rotate(10deg); }
+    50% { top: 10%; left: 80%; transform: rotate(-5deg); }
+    75% { top: 30%; left: 30%; transform: rotate(8deg); }
+    100% { top: 15%; left: 10%; transform: rotate(0deg); }
+  }
+
+  /* Ladybug */
+  .ladybug {
+    position: fixed;
+    font-size: 18px;
+    z-index: 1;
+    animation: crawl 30s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes crawl {
+    0% { bottom: 5%; left: 5%; }
+    25% { bottom: 8%; left: 35%; }
+    50% { bottom: 3%; left: 65%; }
+    75% { bottom: 10%; left: 85%; }
+    100% { bottom: 5%; left: 5%; }
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  .header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.5rem;
+    color: #2D5016;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+    margin-bottom: 5px;
+  }
+  .header p {
+    color: #3D6B1E;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: rgba(255,255,255,0.85);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #2D5016;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  /* Greenhouse tray */
+  .greenhouse-container {
+    position: relative;
+    z-index: 10;
+    max-width: 900px;
+    margin: 15px auto 40px;
+    padding: 0 15px;
+  }
+
+  .tray {
+    background: linear-gradient(180deg, #5C4033 0%, #4A3328 100%);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.1);
+    border: 3px solid #3D2B1F;
+    position: relative;
+  }
+  .tray::before {
+    content: 'JIFFY GREENHOUSE';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6B8F3C;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.85rem;
+    padding: 3px 20px;
+    border-radius: 10px;
+    letter-spacing: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  /* Lid (toggle) */
+  .lid-toggle {
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 10;
+  }
+  .lid-toggle button {
+    background: rgba(173, 216, 230, 0.5);
+    border: 2px dashed rgba(100,160,200,0.5);
+    padding: 6px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: #2D5016;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .lid-toggle button:hover { background: rgba(173, 216, 230, 0.8); }
+
+  .lid {
+    background: linear-gradient(180deg, rgba(200,230,255,0.35), rgba(180,220,250,0.2));
+    border: 2px solid rgba(180,210,240,0.4);
+    border-radius: 10px;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    backdrop-filter: blur(1px);
+  }
+  .lid.open { opacity: 0; }
+
+  .grid-wrapper { position: relative; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px;
+  }
+
+  /* Pod cell */
+  .cell {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .cell:hover { transform: scale(1.08); z-index: 5; }
+  .cell.pod { cursor: grab; }
+  .cell.pod:active { cursor: grabbing; }
+  .cell.dragging { opacity: 0.4; transform: scale(0.9); }
+  .cell.drag-over { box-shadow: 0 0 0 3px #6B8F3C, 0 0 12px rgba(107,143,60,0.5); transform: scale(1.12); }
+
+  /* Empty slot */
+  .cell.empty {
+    background: radial-gradient(circle, #3D2B1F 60%, #2E1F14 100%);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.5);
+    border: 2px solid #2E1F14;
+  }
+  .cell.empty::after {
+    content: '+';
+    color: rgba(255,255,255,0.2);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .cell.empty:hover::after { color: rgba(255,255,255,0.5); }
+
+  /* Pod (filled) */
+  .cell.pod {
+    background: radial-gradient(circle at 40% 40%, #5A3E2B, #3E2A1A);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.3);
+    border: 2px solid #6B4C33;
+  }
+  .cell.pod.has-plant {
+    background: radial-gradient(circle at 40% 40%, #4A3520, #3E2A1A);
+  }
+
+  /* Plant icon on pod */
+  .plant-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    animation: grow-in 0.3s ease-out;
+    position: absolute;
+    top: -2px;
+  }
+  @keyframes grow-in { from { transform: scale(0); } to { transform: scale(1); } }
+
+  /* Sprout animation for newly planted */
+  .cell.pod .sprout {
+    position: absolute;
+    bottom: 55%;
+    font-size: 0.9rem;
+    animation: sprout-up 0.5s ease-out;
+  }
+  @keyframes sprout-up { from { transform: translateY(10px) scale(0); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+  /* Pod label (small text) */
+  .pod-label {
+    position: absolute;
+    bottom: -2px;
+    font-size: 0.45rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    padding: 0 2px;
+  }
+
+  /* Tooltip on hover */
+  .cell .tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 10px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    z-index: 100;
+    font-size: 0.8rem;
+    border: 2px solid #6B8F3C;
+  }
+  .cell .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: white;
+  }
+  .cell:hover .tooltip { display: block; }
+  .tooltip-name { font-weight: 700; color: #2D5016; font-size: 0.9rem; }
+  .tooltip-date { color: #888; font-size: 0.7rem; margin-top: 2px; }
+  .tooltip-pos { color: #aaa; font-size: 0.65rem; margin-top: 2px; }
+
+  /* Row labels */
+  .row-labels {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .row-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    width: 18px;
+    text-align: center;
+  }
+
+  /* Col labels */
+  .col-labels {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .col-label {
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modal-in 0.3s ease-out;
+    position: relative;
+  }
+  @keyframes modal-in { from { transform: scale(0.8) translateY(20px); opacity: 0; } }
+
+  .modal h2 {
+    font-family: 'Fredoka One', cursive;
+    color: #2D5016;
+    margin-bottom: 5px;
+    font-size: 1.3rem;
+  }
+  .modal .pos-label {
+    color: #888;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+  }
+
+  .modal label {
+    display: block;
+    font-weight: 700;
+    color: #3D6B1E;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+  }
+  .modal input, .modal select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .modal input:focus, .modal select:focus { border-color: #6B8F3C; }
+
+  .plant-picker {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  .plant-pick {
+    aspect-ratio: 1;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fafafa;
+  }
+  .plant-pick:hover { border-color: #6B8F3C; background: #f0f7e6; transform: scale(1.1); }
+  .plant-pick.selected { border-color: #6B8F3C; background: #e8f5d4; box-shadow: 0 0 0 2px #6B8F3C; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-save { background: #6B8F3C; color: white; }
+  .btn-save:hover { background: #5A7A32; }
+  .btn-cancel { background: #eee; color: #666; }
+  .btn-cancel:hover { background: #ddd; }
+  .btn-remove { background: #e74c3c; color: white; }
+  .btn-remove:hover { background: #c0392b; }
+
+  /* Garden sign */
+  .garden-sign {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    margin: 0 auto 10px;
+  }
+  .sign-post {
+    width: 8px;
+    height: 30px;
+    background: #8B6914;
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+  .sign-board {
+    background: #C4943E;
+    color: #4A2800;
+    font-family: 'Fredoka One', cursive;
+    padding: 4px 18px;
+    border-radius: 4px;
+    display: inline-block;
+    font-size: 0.75rem;
+    border: 2px solid #8B6914;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  /* Fence */
+  .fence {
+    position: relative;
+    z-index: 10;
+    max-width: 940px;
+    margin: 0 auto;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 10px;
+  }
+  .fence-picket {
+    width: 14px;
+    height: 28px;
+    background: linear-gradient(90deg, #D4A843, #C49A3C, #D4A843);
+    border-radius: 3px 3px 0 0;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .fence-picket::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 2px;
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 6px solid #D4A843;
+  }
+  .fence-rail {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: #B8922F;
+    border-radius: 2px;
+  }
+  .fence-rail:first-child { top: 8px; }
+  .fence-rail:last-child { top: 18px; }
+
+  /* Legend */
+  .legend {
+    position: relative;
+    z-index: 10;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 15px 25px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .legend h3 {
+    font-family: 'Fredoka One', cursive;
+    color: #2D5016;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  .legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f0f7e6;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #3D6B1E;
+  }
+  .legend-count {
+    background: #6B8F3C;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  /* Save notification */
+  .save-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2D5016;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    z-index: 2000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .save-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Clear all button */
+  .clear-all {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 15px;
+  }
+  .clear-all button {
+    background: rgba(255,255,255,0.7);
+    border: 2px solid #ddd;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: #999;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .clear-all button:hover { border-color: #e74c3c; color: #e74c3c; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.6rem; }
+    .grid { gap: 4px; }
+    .tray { padding: 12px; }
+    .plant-icon { font-size: 1rem; }
+    .pod-label { font-size: 0.35rem; }
+    .modal { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background decorations -->
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+<div class="cloud cloud3"></div>
+
+<div class="sun">
+  <div class="sun-ray" style="transform: rotate(0deg)"></div>
+  <div class="sun-ray" style="transform: rotate(30deg)"></div>
+  <div class="sun-ray" style="transform: rotate(60deg)"></div>
+  <div class="sun-ray" style="transform: rotate(90deg)"></div>
+  <div class="sun-ray" style="transform: rotate(120deg)"></div>
+  <div class="sun-ray" style="transform: rotate(150deg)"></div>
+  <div class="sun-ray" style="transform: rotate(180deg)"></div>
+  <div class="sun-ray" style="transform: rotate(210deg)"></div>
+  <div class="sun-ray" style="transform: rotate(240deg)"></div>
+  <div class="sun-ray" style="transform: rotate(270deg)"></div>
+  <div class="sun-ray" style="transform: rotate(300deg)"></div>
+  <div class="sun-ray" style="transform: rotate(330deg)"></div>
+</div>
+
+<div class="butterfly">🦋</div>
+<div class="ladybug">🐞</div>
+
+<div class="ground-deco">
+  <div class="flower-deco" style="left:5%">🌻</div>
+  <div class="flower-deco" style="left:15%; animation-delay:0.5s">🌷</div>
+  <div class="flower-deco" style="left:88%; animation-delay:1s">🌺</div>
+  <div class="flower-deco" style="left:75%; animation-delay:0.3s">🌼</div>
+  <div class="flower-deco" style="left:95%; animation-delay:0.8s">🌸</div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <h1>🌱 Tobi's Greenhouse 🌱</h1>
+  <p>Click a pod to plant, label, or remove seeds!</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-bar">
+  <div class="stat" id="stat-planted">🌱 Planted: 0 / 72</div>
+  <div class="stat" id="stat-empty">🕳️ Empty: 72</div>
+  <div class="stat" id="stat-types">🏷️ Varieties: 0</div>
+</div>
+
+<!-- Lid toggle -->
+<div class="lid-toggle">
+  <button onclick="toggleLid()" id="lid-btn">🔓 Lid is Open</button>
+</div>
+
+<!-- Fence top -->
+<div class="fence" id="fence-top">
+  <div class="fence-rail"></div>
+  <div class="fence-rail"></div>
+</div>
+
+<!-- Greenhouse -->
+<div class="greenhouse-container">
+  <div class="tray">
+    <div class="col-labels" id="col-labels"></div>
+    <div class="grid-wrapper">
+      <div class="row-labels" id="row-labels"></div>
+      <div class="grid" id="grid"></div>
+      <div class="lid open" id="lid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Fence bottom -->
+<div class="fence" id="fence-bottom">
+  <div class="fence-rail"></div>
+  <div class="fence-rail"></div>
+</div>
+
+<!-- Legend -->
+<div class="legend" id="legend" style="display:none">
+  <h3>🏷️ What's Growing</h3>
+  <div class="legend-items" id="legend-items"></div>
+</div>
+
+<!-- Clear all -->
+<div class="clear-all">
+  <button onclick="clearAll()">🗑️ Clear All Pods</button>
+</div>
+
+<!-- Save toast -->
+<div class="save-toast" id="save-toast">✅ Saved!</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">🌱 Plant a Seed</h2>
+    <div class="pos-label" id="modal-pos"></div>
+
+    <label>What are you planting?</label>
+    <input type="text" id="plant-name" placeholder="e.g. Tomato, Basil, Pepper..." autocomplete="off" />
+
+    <label>Choose an icon:</label>
+    <div class="plant-picker" id="plant-picker"></div>
+
+    <label>Notes (optional):</label>
+    <input type="text" id="plant-notes" placeholder="e.g. Roma variety, needs sun..." autocomplete="off" />
+
+    <div class="modal-actions" id="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="savePod()">🌱 Plant It!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ROWS = 6;
+const COLS = 12;
+const TOTAL = ROWS * COLS;
+const ROW_LETTERS = 'ABCDEF';
+
+const PLANT_ICONS = [
+  { icon: '🌱', name: 'Seedling' },
+  { icon: '🍅', name: 'Tomato' },
+  { icon: '🌶️', name: 'Pepper' },
+  { icon: '🥒', name: 'Cucumber' },
+  { icon: '🥕', name: 'Carrot' },
+  { icon: '🥬', name: 'Lettuce' },
+  { icon: '🌿', name: 'Herb' },
+  { icon: '🌻', name: 'Sunflower' },
+  { icon: '🌷', name: 'Tulip' },
+  { icon: '🌺', name: 'Hibiscus' },
+  { icon: '🌸', name: 'Cherry Blossom' },
+  { icon: '🌼', name: 'Daisy' },
+  { icon: '🫑', name: 'Bell Pepper' },
+  { icon: '🍆', name: 'Eggplant' },
+  { icon: '🧅', name: 'Onion' },
+  { icon: '🧄', name: 'Garlic' },
+  { icon: '🥦', name: 'Broccoli' },
+  { icon: '🫛', name: 'Peas' },
+  { icon: '🍓', name: 'Strawberry' },
+  { icon: '🫐', name: 'Blueberry' },
+  { icon: '🌽', name: 'Corn' },
+  { icon: '🍉', name: 'Watermelon' },
+  { icon: '🎃', name: 'Pumpkin' },
+  { icon: '🪻', name: 'Lavender' },
+  { icon: '🌾', name: 'Wheat' },
+  { icon: '🍀', name: 'Clover' },
+  { icon: '🪴', name: 'Potted' },
+  { icon: '🌵', name: 'Cactus' },
+  { icon: '🍃', name: 'Leaves' },
+  { icon: '🌹', name: 'Rose' },
+];
+
+let pods = {};
+let currentCell = null;
+let selectedIcon = '🌱';
+let lidOpen = true;
+let lastPlantedName = '';
+let lastPlantedIcon = '';
+let dragSourceIndex = null;
+
+// Load from localStorage
+function loadData() {
+  const saved = localStorage.getItem('jiffy-greenhouse');
+  if (saved) {
+    try { pods = JSON.parse(saved); } catch(e) { pods = {}; }
+  }
+}
+
+function saveData() {
+  localStorage.setItem('jiffy-greenhouse', JSON.stringify(pods));
+  const toast = document.getElementById('save-toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+function getPosLabel(index) {
+  const row = Math.floor(index / COLS);
+  const col = index % COLS;
+  return ROW_LETTERS[row] + (col + 1);
+}
+
+function buildGrid() {
+  const grid = document.getElementById('grid');
+  const colLabels = document.getElementById('col-labels');
+  const rowLabels = document.getElementById('row-labels');
+
+  // Column labels
+  for (let c = 1; c <= COLS; c++) {
+    const div = document.createElement('div');
+    div.className = 'col-label';
+    div.textContent = c;
+    colLabels.appendChild(div);
+  }
+
+  // Row labels
+  for (let r = 0; r < ROWS; r++) {
+    const div = document.createElement('div');
+    div.className = 'row-label';
+    div.textContent = ROW_LETTERS[r];
+    rowLabels.appendChild(div);
+  }
+
+  // Cells
+  for (let i = 0; i < TOTAL; i++) {
+    const cell = document.createElement('div');
+    cell.dataset.index = i;
+    cell.addEventListener('click', (e) => {
+      if (dragSourceIndex !== null) return;
+      openModal(i);
+    });
+    cell.addEventListener('dragstart', (e) => {
+      if (!pods[i]) { e.preventDefault(); return; }
+      dragSourceIndex = i;
+      cell.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', i);
+    });
+    cell.addEventListener('dragend', () => {
+      cell.classList.remove('dragging');
+      dragSourceIndex = null;
+      document.querySelectorAll('.cell.drag-over').forEach(c => c.classList.remove('drag-over'));
+    });
+    cell.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (parseInt(cell.dataset.index) !== dragSourceIndex) {
+        cell.classList.add('drag-over');
+      }
+    });
+    cell.addEventListener('dragleave', () => {
+      cell.classList.remove('drag-over');
+    });
+    cell.addEventListener('drop', (e) => {
+      e.preventDefault();
+      cell.classList.remove('drag-over');
+      const targetIndex = parseInt(cell.dataset.index);
+      if (dragSourceIndex === null || dragSourceIndex === targetIndex) return;
+      // Swap pods
+      const temp = pods[targetIndex];
+      pods[targetIndex] = pods[dragSourceIndex];
+      if (temp) { pods[dragSourceIndex] = temp; } else { delete pods[dragSourceIndex]; }
+      renderCell(dragSourceIndex);
+      renderCell(targetIndex);
+      updateStats();
+      saveData();
+      dragSourceIndex = null;
+    });
+    grid.appendChild(cell);
+    renderCell(i, cell);
+  }
+
+  // Fence pickets
+  const fenceTop = document.getElementById('fence-top');
+  const fenceBottom = document.getElementById('fence-bottom');
+  for (let i = 0; i < 40; i++) {
+    fenceTop.appendChild(createPicket());
+    fenceBottom.appendChild(createPicket());
+  }
+}
+
+function createPicket() {
+  const p = document.createElement('div');
+  p.className = 'fence-picket';
+  return p;
+}
+
+function renderCell(index, cell) {
+  if (!cell) cell = document.querySelector(`[data-index="${index}"]`);
+  const pod = pods[index];
+
+  if (pod) {
+    cell.className = 'cell pod has-plant';
+    cell.draggable = true;
+    cell.innerHTML = `
+      <span class="plant-icon">${pod.icon}</span>
+      <span class="pod-label">${pod.name}</span>
+      <div class="tooltip">
+        <div class="tooltip-name">${pod.icon} ${pod.name}</div>
+        ${pod.notes ? `<div style="color:#666;font-size:0.75rem">${pod.notes}</div>` : ''}
+        <div class="tooltip-date">Planted: ${pod.date}</div>
+        <div class="tooltip-pos">Position: ${getPosLabel(index)}</div>
+      </div>
+    `;
+  } else {
+    cell.className = 'cell empty';
+    cell.draggable = false;
+    cell.innerHTML = `
+      <div class="tooltip">
+        <div class="tooltip-name">Empty slot</div>
+        <div class="tooltip-pos">Position: ${getPosLabel(index)}</div>
+      </div>
+    `;
+  }
+}
+
+function updateStats() {
+  const planted = Object.keys(pods).length;
+  const types = new Set(Object.values(pods).map(p => p.name.toLowerCase())).size;
+  document.getElementById('stat-planted').textContent = `🌱 Planted: ${planted} / ${TOTAL}`;
+  document.getElementById('stat-empty').textContent = `🕳️ Empty: ${TOTAL - planted}`;
+  document.getElementById('stat-types').textContent = `🏷️ Varieties: ${types}`;
+  updateLegend();
+}
+
+function updateLegend() {
+  const legend = document.getElementById('legend');
+  const items = document.getElementById('legend-items');
+  const counts = {};
+  Object.values(pods).forEach(p => {
+    const key = p.name;
+    if (!counts[key]) counts[key] = { icon: p.icon, count: 0 };
+    counts[key].count++;
+  });
+
+  if (Object.keys(counts).length === 0) {
+    legend.style.display = 'none';
+    return;
+  }
+
+  legend.style.display = 'block';
+  items.innerHTML = '';
+  const sorted = Object.entries(counts).sort((a, b) => b[1].count - a[1].count);
+  sorted.forEach(([name, data]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `${data.icon} ${name} <span class="legend-count">${data.count}</span>`;
+    items.appendChild(item);
+  });
+}
+
+function openModal(index) {
+  currentCell = index;
+  const pod = pods[index];
+  const posLabel = getPosLabel(index);
+
+  document.getElementById('modal-pos').textContent = `Position: ${posLabel}`;
+  document.getElementById('plant-name').value = pod ? pod.name : lastPlantedName;
+  document.getElementById('plant-notes').value = pod ? (pod.notes || '') : '';
+  selectedIcon = pod ? pod.icon : (lastPlantedIcon || '🌱');
+
+  document.getElementById('modal-title').textContent = pod ? '✏️ Edit Pod' : '🌱 Plant a Seed';
+
+  // Build picker
+  const picker = document.getElementById('plant-picker');
+  picker.innerHTML = '';
+  PLANT_ICONS.forEach(p => {
+    const btn = document.createElement('div');
+    btn.className = 'plant-pick' + (p.icon === selectedIcon ? ' selected' : '');
+    btn.textContent = p.icon;
+    btn.title = p.name;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.plant-pick').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedIcon = p.icon;
+      if (!document.getElementById('plant-name').value) {
+        document.getElementById('plant-name').value = p.name;
+      }
+    });
+    picker.appendChild(btn);
+  });
+
+  // Actions
+  const actions = document.getElementById('modal-actions');
+  if (pod) {
+    actions.innerHTML = `
+      <button class="btn-remove" onclick="removePod()">🗑️ Remove</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="savePod()">💾 Save</button>
+    `;
+  } else {
+    actions.innerHTML = `
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="savePod()">🌱 Plant It!</button>
+    `;
+  }
+
+  document.getElementById('modal-overlay').classList.add('active');
+  setTimeout(() => document.getElementById('plant-name').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+  currentCell = null;
+}
+
+function savePod() {
+  const name = document.getElementById('plant-name').value.trim();
+  if (!name) {
+    document.getElementById('plant-name').style.borderColor = '#e74c3c';
+    document.getElementById('plant-name').placeholder = 'Please enter a plant name!';
+    return;
+  }
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const isNew = !pods[currentCell];
+
+  pods[currentCell] = {
+    name: name,
+    icon: selectedIcon,
+    notes: document.getElementById('plant-notes').value.trim(),
+    date: dateStr
+  };
+
+  if (isNew) {
+    lastPlantedName = name;
+    lastPlantedIcon = selectedIcon;
+  }
+
+  renderCell(currentCell);
+  updateStats();
+  saveData();
+  closeModal();
+}
+
+function removePod() {
+  if (currentCell !== null) {
+    delete pods[currentCell];
+    renderCell(currentCell);
+    updateStats();
+    saveData();
+    closeModal();
+  }
+}
+
+function clearAll() {
+  if (Object.keys(pods).length === 0) return;
+  if (!confirm('Remove all pods? This cannot be undone!')) return;
+  pods = {};
+  for (let i = 0; i < TOTAL; i++) renderCell(i);
+  updateStats();
+  saveData();
+}
+
+function toggleLid() {
+  lidOpen = !lidOpen;
+  const lid = document.getElementById('lid');
+  const btn = document.getElementById('lid-btn');
+  lid.classList.toggle('open', lidOpen);
+  btn.textContent = lidOpen ? '🔓 Lid is Open' : '🔒 Lid is Closed';
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('active')) savePod();
+});
+
+// Init
+loadData();
+buildGrid();
+updateStats();
+</script>
+</body>
+</html>
